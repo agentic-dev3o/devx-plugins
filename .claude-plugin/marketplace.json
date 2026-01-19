@@ -1,6 +1,6 @@
 {
   "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
-  "name": "dev3o-devx-plugins",
+  "name": "devx-plugins",
   "version": "1.0.0",
   "description": "Bundled plugins for Claude Code",
   "owner": {
@@ -9,26 +9,15 @@
   },
   "plugins": [
     {
-      "name": "claude-opus-4-5-migration",
-      "description": "Migrate your code and prompts from Sonnet 4.x and Opus 4.1 to Opus 4.5.",
+      "name": "git",
+      "description": "Streamline your git workflow with simple commands for committing, pushing, and creating pull requests",
       "version": "1.0.0",
       "author": {
-        "name": "William Hu",
-        "email": "whu@anthropic.com"
+        "name": "Pierre Tomasina",
+        "email": "contact@dev3o.com"
       },
-      "source": "./plugins/claude-opus-4-5-migration",
+      "source": "./plugins/git",
       "category": "development"
-    },
-    {
-      "name": "security-guidance",
-      "description": "Security reminder hook that warns about potential security issues when editing files, including command injection, XSS, and unsafe code patterns",
-      "version": "1.0.0",
-      "author": {
-        "name": "David Dworken",
-        "email": "dworken@anthropic.com"
-      },
-      "source": "./plugins/security-guidance",
-      "category": "security"
     }
   ]
 }
