@@ -9,7 +9,7 @@
   },
   "plugins": [
     {
-      "name": "git",
+      "name": "devx-git",
       "description": "Streamline your git workflow with simple commands for committing, pushing, and creating pull requests",
       "version": "1.0.0",
       "author": {
