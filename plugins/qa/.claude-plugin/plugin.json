@@ -1,0 +1,9 @@
+{
+  "name": "devx-qa",
+  "description": "Quality assurances toolkit to analyse deeply your codebase, review the code and basic security check",
+  "version": "1.0.0",
+  "author": {
+    "name": "Pierre Tomasina",
+    "email": "contact@dev3o.com"
+  }
+}
