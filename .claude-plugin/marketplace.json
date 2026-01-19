@@ -18,6 +18,17 @@
       },
       "source": "./plugins/git",
       "category": "development"
+    },
+    {
+      "name": "devx-qa",
+      "description": "Quality assurance toolkit to analyze your codebase, review code, and manage CLAUDE.md memory",
+      "version": "1.0.0",
+      "author": {
+        "name": "Pierre Tomasina",
+        "email": "contact@dev3o.com"
+      },
+      "source": "./plugins/qa",
+      "category": "development"
     }
   ]
 }
