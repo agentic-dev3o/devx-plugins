@@ -1,0 +1,9 @@
+{
+  "name": "git",
+  "description": "Streamline your git workflow with simple commands for committing, pushing, and creating pull requests",
+  "version": "1.0.0",
+  "author": {
+    "name": "Pierre Tomasina",
+    "email": "contact@dev3o.com"
+  }
+}
