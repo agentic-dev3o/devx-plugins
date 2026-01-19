@@ -59,4 +59,4 @@ Inline bash execution uses `!` syntax: `!`git status``
 | Plugin | Purpose | Commands |
 |--------|---------|----------|
 | devx-git | Git workflow automation | `/commit`, `/pr` |
-| devx-qa | Code quality analysis | `/explain` |
+| devx-qa | Code quality analysis | `/explain`, `/claudemd` |
