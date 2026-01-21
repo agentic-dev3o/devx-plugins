@@ -22,7 +22,7 @@
     {
       "name": "devx-qa",
       "description": "Quality assurance toolkit to analyze your codebase, review code, and manage CLAUDE.md memory",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "author": {
         "name": "Pierre Tomasina",
         "email": "contact@dev3o.com"

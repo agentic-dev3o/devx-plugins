@@ -1,7 +1,7 @@
 ---
 description: Analyze project architecture with ASCII state machine and sequence diagrams
 argument-hint: [feature-or-entrypoint]
-allowed-tools: Bash(tokei:*,find:*,wc:*,cat:*,head:*), Read, Grep, Glob
+allowed-tools: Bash(tokei), Read, Grep, Glob
 ---
 
 # Project Explain
@@ -10,9 +10,9 @@ Target: $ARGUMENTS
 
 ## Step 1: Analyze Project Composition
 
-Run tokei for language statistics (fallback to file counting if unavailable):
-
-!`tokei --output json 2>/dev/null || tokei 2>/dev/null || (echo "tokei not found, counting files:" && find . -type f \( -name "*.ts" -o -name "*.js" -o -name "*.py" -o -name "*.go" -o -name "*.rs" -o -name "*.java" \) 2>/dev/null | head -50 | xargs wc -l 2>/dev/null | tail -5)`
+Get language statistics by running tokei: !`tokei || echo 'not installed'`
+If tokei is not installed, use Glob to count files by extension (*.ts, *.js, *.py, *.go, *.rs, *.java) and estimate project composition from the results.
+**Include language statistics results in the Summary**
 
 Detect package manifests and read the first one found:
 - `package.json` for Node.js dependencies
