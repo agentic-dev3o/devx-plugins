@@ -93,6 +93,24 @@ fix(api): resolve race condition in websocket handler
 chore: update dependencies to latest versions
 ```
 
+> ⚠️ **GPG Signed Commits (macOS Sandbox)**
+>
+> If you use GPG commit signing with Claude Code's sandbox mode, GPG needs access to its Unix socket. Add this to your `~/.claude/settings.json`:
+>
+> ```json
+> {
+>   "sandbox": {
+>     "network": {
+>       "allowUnixSockets": [
+>         "~/.gnupg/S.gpg-agent"
+>       ]
+>     }
+>   }
+> }
+> ```
+>
+> This allows GPG to communicate with its agent while keeping git sandboxed. Only tested on macOS.
+
 ---
 
 #### `/devx-git:pr [base-branch]`
