@@ -1,0 +1,9 @@
+{
+  "name": "landing-page",
+  "description": "Create high-converting landing pages with structured copywriting and opinionated HTML/CSS generation",
+  "version": "0.1.0",
+  "author": {
+    "name": "Pierre Tomasina",
+    "email": "contact@dev3o.com"
+  }
+}
