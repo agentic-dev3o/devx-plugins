@@ -40,6 +40,17 @@
       },
       "source": "./plugins/landing-page",
       "category": "marketing"
+    },
+    {
+      "name": "secrets-guard",
+      "description": "Security hook that blocks Claude from reading, writing, or accessing secret and sensitive files",
+      "version": "1.0.0",
+      "author": {
+        "name": "Pierre Tomasina",
+        "email": "contact@dev3o.com"
+      },
+      "source": "./plugins/secrets-guard",
+      "category": "security"
     }
   ]
 }

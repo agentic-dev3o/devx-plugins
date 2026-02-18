@@ -60,3 +60,4 @@ Inline bash execution uses `!` syntax: `!`git status``
 |--------|---------|----------|
 | devx-git | Git workflow automation | `/commit`, `/pr` |
 | devx-qa | Code quality analysis | `/explain`, `/claudemd` |
+| secrets-guard | Block access to secret/sensitive files | hooks only |
