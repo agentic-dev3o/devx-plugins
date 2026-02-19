@@ -63,6 +63,7 @@ Or install directly:
 /plugin install devx-git@devx-plugins
 /plugin install devx-qa@devx-plugins
 /plugin install secrets-guard@devx-plugins
+/plugin install devx-ralph@devx-plugins  # Premium - requires yearly membership
 ```
 
 ---
@@ -214,6 +215,88 @@ The hook intercepts every `Read`, `Write`, `Edit`, `NotebookEdit`, `Bash`, `Glob
 > **Known limitation:** Bash command checking uses string-pattern matching. It cannot detect obfuscated access via variable indirection, encoding, glob expansion, symlinks, or command substitution. This hook is a **deterrent layer**, not a sandbox.
 >
 > For process-level isolation, see [sandbox-shell](https://github.com/agentic-dev3o/sandbox-shell) — a sandboxed shell (MacOS only) that restricts what Claude Code can execute at the OS level.
+
+---
+
+### devx-ralph
+
+**Predicate-driven agentic loop** — Define success criteria, let Claude iterate until they pass.
+
+> **Premium Plugin** — Available to yearly community members at [dev3o.com](https://dev3o.com)
+
+#### `/devx-ralph:plan <task>`
+
+Generate a structured implementation plan with verifiable predicates.
+
+```
+/devx-ralph:plan add user authentication with JWT
+```
+
+**What happens:**
+1. Asks clarifying questions (definition of done, verification command, TDD preference)
+2. Analyzes your codebase for patterns and architecture
+3. Generates ASCII state machine and sequence diagrams
+4. Breakdown to multi-task with shell predicates for success rate
+5. Write the detail specification plan use for the half loop
+
+---
+
+#### `/devx-ralph:ralph`
+
+Execute the agentic loop — implements tasks until all predicates pass.
+
+```
+/devx-ralph:ralph
+```
+
+**What happens:**
+1. Reads current plan and identifies next pending task
+2. Implements the task (TDD if specified)
+3. Runs the predicate to verify completion
+4. On success: marks task complete, moves to next
+5. On failure: analyzes error, retries with feedback
+6. After all tasks pass: enters review phase to catch drift
+
+**Status lifecycle:** `draft` → `running` → `review` → `complete`
+
+---
+
+#### `/devx-ralph:archive`
+
+Archive completed plans and prepare for new work.
+
+```
+/devx-ralph:archive
+```
+
+Plans are archived to `.claude/ralph-plan/archive/` with incremental numbering.
+
+---
+
+#### Orchestrator Mode
+
+For large plans, run with isolated sessions to avoid context rot:
+
+```bash
+~/.claude/plugins/devx-ralph/scripts/ralph-loop.sh
+```
+
+**Benefits:**
+- Fresh context for each task (no context rot)
+- Auto-commit after each task completion
+- Token efficient
+
+---
+
+#### Join the Community
+
+devx-ralph is available exclusively to yearly community members.
+
+**[Join at dev3o.com](https://dev3o.com)** to get access to:
+- devx-ralph plugin
+- Priority support
+- Early access to new plugins
+- Direct feedback channel
 
 ---
 

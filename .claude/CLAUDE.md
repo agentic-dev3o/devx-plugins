@@ -13,18 +13,13 @@ devx-plugins/
 ├── .claude-plugin/
 │   └── marketplace.json      # Plugin registry (lists all plugins)
 └── plugins/
-    ├── git/                   # devx-git plugin
-    │   ├── .claude-plugin/
-    │   │   └── plugin.json   # Plugin manifest
-    │   └── commands/         # Slash commands
-    │       ├── ci.md         # /commit - conventional commits
-    │       └── pr.md         # /pr - create pull requests
-    └── qa/                    # devx-qa plugin
+    └── <plugin-name>/
         ├── .claude-plugin/
-        │   └── plugin.json
+        │   └── plugin.json   # Plugin manifest
         ├── commands/         # Slash commands
-        ├── agents/           # Autonomous agents
-        └── skills/           # Knowledge/skill definitions
+        ├── agents/           # Autonomous agents (optional)
+        ├── skills/           # Knowledge/skill definitions (optional)
+        └── hooks/            # Event hooks (optional)
 ```
 
 ## Plugin Structure
@@ -61,3 +56,4 @@ Inline bash execution uses `!` syntax: `!`git status``
 | devx-git | Git workflow automation | `/commit`, `/pr` |
 | devx-qa | Code quality analysis | `/explain`, `/claudemd` |
 | secrets-guard | Block access to secret/sensitive files | hooks only |
+| devx-ralph | Predicate-driven agentic loop | `/plan`, `/ralph`, `/analyze` |
