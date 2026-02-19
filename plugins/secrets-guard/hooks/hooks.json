@@ -1,15 +1,15 @@
 {
-  "hooks": [
-    {
-      "type": "PreToolUse",
-      "matcher": "Read|Write|Edit|NotebookEdit|Bash|Glob|Grep",
-      "hooks": [
-        {
-          "type": "command",
-          "command": "bash ${CLAUDE_PLUGIN_ROOT}/hooks/guard.sh",
-          "timeout": 10000
-        }
-      ]
-    }
-  ]
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Read|Glob|Grep|Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"${CLAUDE_PLUGIN_ROOT}\"/hooks/guard.sh"
+          }
+        ]
+      }
+    ]
+  }
 }

@@ -15,14 +15,14 @@ PATTERNS_FILE="$SCRIPT_DIR/../patterns.txt"
 
 # Require jq for JSON parsing
 if ! command -v jq &>/dev/null; then
-  printf '{"decision":"block","reason":"secrets-guard: jq is required but not installed"}\n'
-  exit 0
+  echo "secrets-guard: jq is required but not installed" >&2
+  exit 2
 fi
 
 # Fail-closed: if patterns file is missing, block for safety
 if [[ ! -f "$PATTERNS_FILE" ]]; then
-  printf '{"decision":"block","reason":"secrets-guard: patterns.txt not found — blocking for safety"}\n'
-  exit 0
+  echo "secrets-guard: patterns.txt not found — blocking for safety" >&2
+  exit 2
 fi
 
 # Read the hook input from stdin
@@ -64,8 +64,11 @@ matched_pattern="$(printf '%s\n' "$check_text" | grep -oE "$regex" | head -n1 ||
 
 if [[ -n "$matched_pattern" ]]; then
   jq -nc --arg pattern "$matched_pattern" '{
-    "decision": "block",
-    "reason": "secrets-guard: access denied — matched sensitive pattern: " + $pattern
+    "hookSpecificOutput": {
+      "hookEventName": "PreToolUse",
+      "permissionDecision": "deny",
+      "permissionDecisionReason": "secrets-guard: access denied — matched sensitive pattern: " + $pattern
+    }
   }'
   exit 0
 fi
