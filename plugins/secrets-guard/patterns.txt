@@ -1,0 +1,104 @@
+# secrets-guard patterns
+# One regex per line. Lines starting with # are comments.
+# These patterns are matched against file paths and bash commands.
+
+# ── Environment files ──
+# Note: .env.example/.env.sample are intentionally blocked as a conservative
+# default — they sometimes contain real values copied from .env files.
+\.env$
+\.env\..*
+\.flaskenv$
+
+# ── Private keys & certificates ──
+\.pem$
+\.key$
+\.p12$
+\.pfx$
+\.jks$
+id_rsa$
+id_ed25519$
+id_ecdsa$
+id_dsa$
+
+# ── SSH directory ──
+\.ssh/
+
+# ── App secrets & tokens ──
+credentials\.json
+client_secret.*\.json
+service-account.*\.json
+token\.json
+secrets\.ya?ml
+vault\.ya?ml
+master\.key
+
+# ── Package manager auth ──
+\.npmrc$
+\.pypirc$
+\.gem/credentials
+
+# ── Network / auth ──
+\.netrc$
+\.pgpass$
+\.my\.cnf$
+\.docker/config\.json
+
+# ── Cloud credentials ──
+\.aws/credentials
+\.aws/config
+\.kube/config
+\.config/gcloud/
+\.azure/
+\.boto$
+
+# ── Infrastructure ──
+\.tfvars$
+terraform\.tfstate
+\.tfstate\.backup$
+\.terraform/
+ansible-vault
+
+# ── Encryption / keystores ──
+\.asc$
+\.gpg$
+secring\.
+\.keystore$
+\.keyring$
+
+# ── Shell history ──
+\.bash_history
+\.zsh_history
+\.psql_history
+\.mysql_history
+\.node_repl_history
+\.python_history
+
+# ── App-specific config ──
+wp-config\.php
+config/database\.yml
+config/master\.key
+config/credentials\.yml\.enc
+
+# ── htpasswd / shadow ──
+\.htpasswd$
+/etc/shadow
+
+# ── Kubernetes secrets ──
+kubeconfig
+\.kube/
+
+# ── GPG ──
+\.gnupg/
+
+# ── Age encryption ──
+\.age$
+
+# ── Secrets / tokens ──
+\.secrets?$
+\.vault-token
+
+# ── AI / ML credentials ──
+\.huggingface/
+
+# ── CLI tool credentials ──
+\.config/gh/hosts\.yml
