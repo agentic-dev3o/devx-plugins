@@ -51,6 +51,20 @@
       },
       "source": "./plugins/secrets-guard",
       "category": "security"
+    },
+    {
+      "name": "devx-ralph",
+      "description": "Predicate-driven agentic loop with structured planning and iterative implementation",
+      "version": "1.0.0",
+      "author": {
+        "name": "Pierre Tomasina",
+        "email": "contact@dev3o.com"
+      },
+      "source": {
+        "source": "github",
+        "repo": "agentic-dev3o/cc-ralph-loop"
+      },
+      "category": "development"
     }
   ]
 }
