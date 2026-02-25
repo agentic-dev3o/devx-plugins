@@ -16,24 +16,25 @@ Create a Conventional Commit from staged changes.
 
 ## Workflow
 
-1. **Verify staged changes exist**
+1. Verify staged changes exist
    - If none: show `git status --short`, prompt user to stage files, exit
 
-2. **Analyze diff** → determine type, scope, subject
+2. Analyze diff → determine type, scope, subject
 
-3. **Generate message** using format:
-   ```
-   <type>(<scope>): <subject>
-   
-   [optional body for complex changes]
-   ```
-
-4. **Show preview** → confirm with user
-
-5. **Commit** if confirmed:
+3. Commit immediately (no confirmation needed):
    ```bash
    git commit -m "<message>"
    ```
+
+4. Show the commit hash and message summary
+
+## Message Format
+
+```
+<type>(<scope>): <subject>
+
+[optional body for complex changes]
+```
 
 ## Type Selection
 
