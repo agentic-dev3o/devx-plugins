@@ -1,18 +1,17 @@
 ---
 name: ci
 description: Stages all changes, guards against unignored junk files, and generates a conventional commit. Triggered when the user runs /commit or asks to commit.
+model: sonnet
+allowed-tools: Bash(git:*)
 ---
 
 # Conventional Commit
 
 ## Workflow
 
-1. Check for unignored junk files **before staging anything**:
-   ```bash
-   git status --short
-   ```
-   Scan untracked files for paths that should never be committed (see Gitignore Guard below).
-   If any are found, create or update `.gitignore` to cover them, then continue.
+1. Run `git status --short` and inspect untracked files for paths that should never be committed (see Junk File Detection below).
+   - If any are found: **stop immediately**, list the offending paths, and tell the user they should probably add them to `.gitignore`. Do NOT stage or commit anything.
+   - If none are found: continue.
 
 2. Stage all changes and gather context:
    ```bash
@@ -31,12 +30,11 @@ description: Stages all changes, guards against unignored junk files, and genera
 
 5. Show the commit hash and message summary
 
-## Gitignore Guard
+## Junk File Detection
 
-Before staging, scan `git status` output for untracked paths matching common junk patterns.
-If any match, add a rule to `.gitignore` (create the file if missing) before proceeding.
+Before staging, scan `git status` output for untracked paths matching common junk patterns. If any match, **stop and instruct the user** to add the relevant rules to `.gitignore`.
 
-**Patterns to catch:**
+**Common patterns to watch for:**
 
 | Category | Paths |
 |----------|-------|

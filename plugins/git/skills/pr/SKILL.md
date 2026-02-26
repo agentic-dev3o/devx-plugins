@@ -1,6 +1,9 @@
 ---
 name: pr
 description: Creates a GitHub pull request using gh CLI. Triggered when the user asks to open, create, or submit a PR, or runs /pr.
+model: sonnet
+allowed-tools: Bash, Read, Grep, Glob
+argument-hint: "[base-branch]"
 ---
 
 # Create Pull Request
@@ -31,3 +34,4 @@ EOF
 ## Rules
 
 - Never use interactive flags (`-i`)
+- Never use `--force` or `--force-with-lease` when pushing
