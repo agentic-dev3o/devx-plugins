@@ -53,7 +53,7 @@ Inline bash execution uses `!` syntax: `!`git status``
 
 | Plugin | Purpose | Commands |
 |--------|---------|----------|
-| devx-git | Git workflow automation | `/commit`, `/pr` |
+| devx-git | Git workflow automation | `/commit`, `/pr` (skills) |
 | devx-qa | Code quality analysis | `/explain`, `/claudemd` |
 | secrets-guard | Block access to secret/sensitive files | hooks only |
 | devx-ralph | Predicate-driven agentic loop | `/plan`, `/ralph`, `/analyze` |
