@@ -63,8 +63,8 @@ Every command in this marketplace comes from real, daily usage — refined over 
 
 | Plugin | What it does | Install |
 |--------|-------------|---------|
-| [**devx-git**](plugins/git/) | Conventional commits & PR creation | `/plugin install devx-git@devx-plugins` |
-| [**devx-qa**](plugins/qa/) | Architecture analysis with ASCII diagrams & CLAUDE.md sync | `/plugin install devx-qa@devx-plugins` |
+| [**devx-git**](plugins/git/) | Conventional commits & PR creation (skills: `/commit`, `/pr`) | `/plugin install devx-git@devx-plugins` |
+| [**devx-qa**](plugins/qa/) | Architecture analysis with ASCII diagrams & skill improvement | `/plugin install devx-qa@devx-plugins` |
 | [**secrets-guard**](plugins/secrets-guard/) | Blocks Claude from accessing sensitive files (70+ patterns) | `/plugin install secrets-guard@devx-plugins` |
 | [**landing-page**](plugins/landing-page/) | Structured copywriting & Astro 5 landing page generation | `/plugin install landing-page@devx-plugins` |
 | [**devx-ralph**](#devx-ralph) | Predicate-driven agentic loop for structured implementation | Premium — see below |
@@ -77,11 +77,12 @@ Every command in this marketplace comes from real, daily usage — refined over 
 
 Ralph-Loop is a premium plugin included in the **[DevX Course](https://dev3o.com/#pricing)**.
 
-| Command | Purpose |
-|---------|---------|
-| `/devx-ralph:plan <task>` | Generate structured plan with verifiable predicates |
-| `/devx-ralph:ralph` | Execute the agentic loop until all predicates pass |
-| `/devx-ralph:archive` | Archive completed plans |
+| Type | Name | Purpose |
+|------|------|---------|
+| Command | `/devx-ralph:plan <task>` | Generate structured plan with verifiable predicates |
+| Command | `/devx-ralph:ralph` | Execute the agentic loop until all predicates pass |
+| Command | `/devx-ralph:archive` | Archive completed plans |
+| Skill | `analyze` | Deep codebase analysis for planning context |
 
 **Orchestrator mode** — Run with isolated sessions to avoid context rot, auto-commit after each task, token efficient.
 
