@@ -8,15 +8,16 @@ Code quality tools for understanding and maintaining projects.
 /plugin install devx-qa@devx-plugins
 ```
 
-## Commands
+## Skills
 
-### `/devx-qa:explain [feature]`
+### explaining-architecture
 
-Architecture analysis with ASCII diagrams. No external dependencies.
+Analyzes project architecture and generates ASCII state machine and sequence diagrams. Triggers automatically when you ask to explain a project, analyze architecture, or trace an entrypoint.
 
 ```
-/devx-qa:explain
-/devx-qa:explain auth-flow
+explain this project
+explain the auth-flow feature
+show me the architecture
 ```
 
 **What happens:**
@@ -43,14 +44,15 @@ No mermaid. No external tools. Just ASCII that works everywhere.
 
 ---
 
-### `/devx-qa:claudemd [full|quick]`
+### fixing-skills
 
-Keep your CLAUDE.md in sync with codebase evolution.
+Evaluates and improves a plugin's skills by applying Anthropic's skill authoring best practices. Triggers when you ask to fix, improve, or review skills.
 
-```
-/devx-qa:claudemd
-/devx-qa:claudemd quick
-```
+---
+
+### claudemd
+
+Keeps CLAUDE.md in sync with codebase evolution. Triggers when you ask to update or sync CLAUDE.md.
 
 **What happens:**
 1. Finds your CLAUDE.md (or creates one)
