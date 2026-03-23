@@ -50,6 +50,27 @@ Evaluates and improves a plugin's skills by applying Anthropic's skill authoring
 
 ---
 
+### fixing-react-antipatterns
+
+Audits React codebases for anti-patterns (useEffect misuse, missing cleanup, stale closures, memory leaks) and produces a scored gap analysis table with severity ratings. Applies prioritized fixes on request.
+
+```
+audit react code
+fix react anti-patterns
+check useEffect cleanup in src/components/
+```
+
+**What happens:**
+1. Runs `scan-antipatterns.sh` to inventory suspect patterns
+2. Reads flagged files and classifies findings by category and severity
+3. Produces a gap analysis table grouped by: useEffect rules, state management, component architecture, cleanup & memory safety, navigation & DOM
+4. Applies fixes in priority order (if requested)
+5. Verifies with lint
+
+Includes three reference files with authoritative rules and before/after fix examples.
+
+---
+
 ### claudemd
 
 Keeps CLAUDE.md in sync with codebase evolution. Triggers when you ask to update or sync CLAUDE.md.
