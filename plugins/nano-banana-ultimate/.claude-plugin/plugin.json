@@ -1,0 +1,9 @@
+{
+  "name": "nano-banana-ultimate",
+  "description": "Generate and edit images via Google Gemini with domain-specialized prompt building for ads, web, YouTube, illustration, logos, people, and objects",
+  "version": "1.0.0",
+  "author": {
+    "name": "Pierre Tomasina",
+    "email": "contact@dev3o.com"
+  }
+}

@@ -65,6 +65,17 @@
         "repo": "agentic-dev3o/cc-ralph-loop"
       },
       "category": "development"
+    },
+    {
+      "name": "nano-banana-ultimate",
+      "description": "Generate and edit images via Google Gemini with domain-specialized prompt building",
+      "version": "1.0.0",
+      "author": {
+        "name": "Pierre Tomasina",
+        "email": "contact@dev3o.com"
+      },
+      "source": "./plugins/nano-banana-ultimate",
+      "category": "creative"
     }
   ]
 }
