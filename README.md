@@ -68,26 +68,6 @@ Every command in this marketplace comes from real, daily usage — refined over 
 | [**secrets-guard**](plugins/secrets-guard/) | Blocks Claude from accessing sensitive files (70+ patterns) | `/plugin install secrets-guard@devx-plugins` |
 | [**landing-page**](plugins/landing-page/) | Structured copywriting & Astro 5 landing page generation | `/plugin install landing-page@devx-plugins` |
 | [**nano-banana-ultimate**](plugins/nano-banana-ultimate/) | Image generation via Gemini with 8 domain-specialized skills | `/plugin install nano-banana-ultimate@devx-plugins` |
-| [**devx-ralph**](#devx-ralph) | Predicate-driven agentic loop for structured implementation | Premium — see below |
-
----
-
-### devx-ralph
-
-**Predicate-driven agentic loop** — Define success criteria, let Claude iterate until they pass.
-
-Ralph-Loop is a premium plugin included in the **[DevX Course](https://dev3o.com/#pricing)**.
-
-| Type | Name | Purpose |
-|------|------|---------|
-| Command | `/devx-ralph:plan <task>` | Generate structured plan with verifiable predicates |
-| Command | `/devx-ralph:ralph` | Execute the agentic loop until all predicates pass |
-| Command | `/devx-ralph:archive` | Archive completed plans |
-| Skill | `analyze` | Deep codebase analysis for planning context |
-
-**Orchestrator mode** — Run with isolated sessions to avoid context rot, auto-commit after each task, token efficient.
-
-**[Get access at dev3o.com](https://dev3o.com/#pricing)**
 
 ---
 
