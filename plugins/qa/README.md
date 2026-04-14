@@ -1,6 +1,6 @@
 # devx-qa
 
-Code quality tools for understanding and maintaining projects.
+Code quality tools for reviewing changes, understanding architecture, performing focused appsec reviews, and maintaining projects.
 
 ## Installation
 
@@ -41,6 +41,46 @@ show me the architecture
 ```
 
 No mermaid. No external tools. Just ASCII that works everywhere.
+
+---
+
+### code-review
+
+Reviews pull requests and code changes for correctness, conventions, maintainability, performance, tests, and security. Triggers when you ask for a code review, PR review, feedback on a diff, or to check code quality.
+
+```
+review this PR 42
+review my staged changes
+check code quality in src/auth
+```
+
+**What happens:**
+1. Resolves the review target (PR, local diff, commit range, or path)
+2. Uses `gh pr list`, `gh pr view`, and `gh pr diff` for GitHub PR reviews when relevant
+3. Reads the changed files with surrounding context
+4. Checks correctness, conventions, performance, tests, and security
+5. Returns findings-first feedback grouped by: Must fix, Should fix, Nit
+
+---
+
+### appsec-review
+
+Performs a focused application security review of pull requests and branch diffs. Triggers when you ask for a security review of a PR, diff, or branch, or want only exploitable auth, injection, data exposure, and trust-boundary issues.
+
+```
+security review this PR
+audit this branch for vulnerabilities
+check this diff for auth or injection bugs
+```
+
+**What happens:**
+1. Resolves the review scope from a PR, local branch, or commit range
+2. Reads nearby auth, validation, tenant, rendering, and data-flow code for context
+3. Generates candidate vulnerabilities, then filters false positives with a second pass
+4. Reports only HIGH and MEDIUM findings with confidence `>= 8/10`
+5. Returns markdown only, or states that no high-confidence appsec findings were found
+
+Includes a playbook for TypeScript/Node, Python, Rust, and modern web app attack surfaces.
 
 ---
 

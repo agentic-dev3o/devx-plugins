@@ -64,7 +64,7 @@ Every command in this marketplace comes from real, daily usage — refined over 
 | Plugin | What it does | Install |
 |--------|-------------|---------|
 | [**devx-git**](plugins/git/) | Conventional commits & PR creation (skills: `/commit`, `/pr`) | `/plugin install devx-git@devx-plugins` |
-| [**devx-qa**](plugins/qa/) | Architecture analysis with ASCII diagrams & skill improvement | `/plugin install devx-qa@devx-plugins` |
+| [**devx-qa**](plugins/qa/) | Architecture analysis, code review, appsec review & React/skill audits | `/plugin install devx-qa@devx-plugins` |
 | [**secrets-guard**](plugins/secrets-guard/) | Blocks Claude from accessing sensitive files (70+ patterns) | `/plugin install secrets-guard@devx-plugins` |
 | [**landing-page**](plugins/landing-page/) | Structured copywriting & Astro 5 landing page generation | `/plugin install landing-page@devx-plugins` |
 | [**nano-banana-ultimate**](plugins/nano-banana-ultimate/) | Image generation via Gemini with 8 domain-specialized skills | `/plugin install nano-banana-ultimate@devx-plugins` |
