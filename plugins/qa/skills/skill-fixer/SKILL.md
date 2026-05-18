@@ -1,6 +1,7 @@
 ---
 name: fixing-skills
 description: Evaluate and improve a plugin's skills by applying Anthropic's skill authoring best practices. Triggers when the user asks to fix, improve, or review skills for a specific plugin or agent team.
+disable-model-invocation: true
 ---
 
 You are aware of softmax distribute attention.
