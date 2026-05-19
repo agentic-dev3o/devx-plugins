@@ -21,8 +21,8 @@
     },
     {
       "name": "devx-qa",
-      "description": "Quality assurance toolkit to analyze codebases, review code changes, perform focused appsec reviews, audit React patterns, and improve skills",
-      "version": "1.4.0",
+      "description": "Quality assurance toolkit to analyze codebases, review code changes, perform focused appsec reviews, audit React patterns, fix the agentic harness, and improve skills",
+      "version": "1.5.0",
       "author": {
         "name": "Pierre Tomasina",
         "email": "contact@dev3o.com"
