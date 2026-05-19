@@ -6,9 +6,9 @@ description: >-
   configuration that loads only what is relevant. Rewrites CLAUDE.md and
   AGENTS.md as a thin critical-rules layer, segments domain rules with `paths:`
   frontmatter, and adds deny-first permission guardrails.
-  Triggers on: fix harness, audit claude.md, refactor agentic configuration,
-  improve agent rules, segment rules by path, review settings.json,
-  harness review, claude.md is too long.
+  Use for: fixing the harness, auditing claude.md, refactoring agentic
+  configuration, improving agent rules, segmenting rules by path,
+  reviewing settings.json, harness review, or when claude.md is too long.
 disable-model-invocation: true
 ---
 

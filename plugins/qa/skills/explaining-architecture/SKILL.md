@@ -1,6 +1,6 @@
 ---
 name: explaining-architecture
-description: Analyzes project architecture and generates ASCII state machine and sequence diagrams. Use when the user asks to explain a project, analyze architecture, trace an entrypoint, show a state machine, or generate a sequence diagram.
+description: Analyzes project architecture and generates ASCII state machine and sequence diagrams. Use for explaining a project, analyzing architecture, tracing an entrypoint, showing a state machine, or generating a sequence diagram.
 disable-model-invocation: true
 ---
 
