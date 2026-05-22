@@ -57,3 +57,4 @@ Inline bash execution uses `!` syntax: `!`git status``
 | devx-qa | Architecture analysis, code review, appsec review, harness fixing, skill improvement & React auditing | `/explaining-architecture`, `/code-review`, `/appsec-review`, `/fixing-harness`, `/skill-fixer`, `/fixing-react-antipatterns` (skills) |
 | secrets-guard | Block access to secret/sensitive files | hooks only |
 | landing-page | Structured copywriting & Astro 5 landing pages | `/writing-landing-page-copy`, `/building-landing-page` (skills) |
+| agentic-engineering | Audit agents/tool-loops/inference and rewrite prompts via Anthropic best practices | `/auditing-agentic-systems`, `/optimizing-prompts` (skills) |

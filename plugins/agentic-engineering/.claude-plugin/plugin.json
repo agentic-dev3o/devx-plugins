@@ -1,0 +1,9 @@
+{
+  "name": "agentic-engineering",
+  "description": "Audit and optimize agentic systems — review agents, tool loops, and inference requests across prompt engineering, tools, context, cache, evaluation, and guardrails; rewrite prompts using Anthropic best practices",
+  "version": "1.0.0",
+  "author": {
+    "name": "Pierre Tomasina",
+    "email": "contact@dev3o.com"
+  }
+}
