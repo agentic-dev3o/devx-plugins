@@ -61,7 +61,9 @@ Present the specific conflict and concrete options. If resolution becomes unwork
 ## Phase 4 — Finish
 
 1. **Verify the result:** `git status` clean, `git log --oneline -5` correct. If it is not clean, do not proceed — go to recovery (step 4).
-2. The branch now diverges from its remote. **Offer** `git push --force-with-lease`; run it only if the user confirms.
+2. Update the remote (offer only; run it solely on user confirmation):
+   - **Rebase path** (history rewritten) → `git push --force-with-lease`.
+   - **Merge-fallback path** (Phase 2 abort) → history was not rewritten, so a plain `git push` fast-forwards; force is unnecessary.
 3. **Success** → delete the backup: `git branch -D <backup>`.
 4. **Anything wrong** → keep `<backup>` and give recovery steps:
    ```bash
