@@ -14,7 +14,7 @@ Copy this checklist into your reply and check items off as you go:
 
 ```
 Rebase Progress:
-- [ ] Preflight passed (clean tree, not detached, branch ≠ origin)
+- [ ] Preflight passed (clean tree, not detached, branch ≠ origin, push.default safe)
 - [ ] Backup branch created
 - [ ] Rebase attempted
 - [ ] Conflicts triaged + resolved (or merged as fallback)
@@ -30,6 +30,7 @@ Rebase Progress:
 3. **Back up before touching anything:** `git branch backup/$(git branch --show-current)-$(git rev-parse --short HEAD)`. Tell the user the exact name; call it `<backup>` below.
 4. Never delete `<backup>` unless the final tree is verified clean and the update succeeded.
 5. Never force-push without explicit user confirmation.
+6. **Push only the current branch — never a bare push.** A bare `git push` obeys `push.default`; under `matching` it force-updates *every* local branch whose name matches a remote one (e.g. a stale local `main`), and `--force-with-lease` will *not* stop it if you fetched recently (the lease only blocks unfetched concurrent changes). Always push with an explicit refspec — `origin HEAD` resolves to "current branch → its same-named remote branch" and is immune to `push.default`. As preflight hardening, run `git config push.default`; if it is `matching` or empty, warn the user and offer `git config push.default current` for this repo.
 
 ## Phase 1 — Rebase
 
@@ -61,9 +62,9 @@ Present the specific conflict and concrete options. If resolution becomes unwork
 ## Phase 4 — Finish
 
 1. **Verify the result:** `git status` clean, `git log --oneline -5` correct. If it is not clean, do not proceed — go to recovery (step 4).
-2. Update the remote (offer only; run it solely on user confirmation):
-   - **Rebase path** (history rewritten) → `git push --force-with-lease`.
-   - **Merge-fallback path** (Phase 2 abort) → history was not rewritten, so a plain `git push` fast-forwards; force is unnecessary.
+2. Update the remote (offer only; run it solely on user confirmation). **Always scope the push to the current branch with an explicit refspec — never a bare `git push` (see Guardrail 6):**
+   - **Rebase path** (history rewritten) → `git push --force-with-lease origin HEAD`. For belt-and-suspenders, pin the lease: `git push --force-with-lease=<branch>:<sha> origin HEAD:<branch>`.
+   - **Merge-fallback path** (Phase 2 abort) → history was not rewritten, so `git push origin HEAD` fast-forwards; force is unnecessary.
 3. **Success** → delete the backup: `git branch -D <backup>`.
 4. **Anything wrong** → keep `<backup>` and give recovery steps:
    ```bash
