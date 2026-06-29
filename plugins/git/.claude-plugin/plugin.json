@@ -1,7 +1,7 @@
 {
   "name": "devx-git",
   "description": "Streamline your git workflow with simple commands for committing, creating pull requests, and updating branches via rebase",
-  "version": "2.1.1",
+  "version": "2.1.2",
   "author": {
     "name": "Pierre Tomasina",
     "email": "contact@dev3o.com"
