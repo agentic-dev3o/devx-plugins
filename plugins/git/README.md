@@ -12,17 +12,17 @@ Git workflow automation for developers who commit often and want clean history.
 
 ### `/devx-git:ci`
 
-Conventional commits from staged changes. No more thinking about commit message format.
+Autonomous conventional commits. Picks out this session's work, skips junk and secrets, and commits — no manual staging, no thinking about commit message format.
 
 ```
 /devx-git:ci
 ```
 
 **What happens:**
-1. Analyzes your staged diff
-2. Determines type (`feat`, `fix`, `refactor`, etc.), scope, and subject
-3. Shows preview for your confirmation
-4. Commits
+1. Surveys the working tree and sorts changes: this session's work vs. junk, secrets, and unrelated edits
+2. Stages only the session's work with explicit paths (never `git add -A`)
+3. Determines type (`feat`, `fix`, `refactor`, etc.), scope, and subject
+4. Commits immediately, then reports anything it left out (and why)
 
 **Output:**
 ```
