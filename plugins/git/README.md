@@ -51,23 +51,22 @@ Create GitHub pull requests with proper descriptions. Defaults to `main`.
 
 ---
 
-### `/devx-git:rebase [origin-branch]`
+### `/devx-git:update-origin [origin-branch]`
 
-Update the current branch with an origin branch via rebase, with safe conflict resolution and automatic backup/recovery. Defaults to `main`.
+Update the current branch from an origin branch via standard merge — never rebase, never force-push — with safe conflict resolution and automatic backup/recovery. Defaults to `main`. Merges keep published history intact, so the update stays safe when several developers or agents work on the same branch.
 
 ```
-/devx-git:rebase
-/devx-git:rebase develop
+/devx-git:update-origin
+/devx-git:update-origin develop
 ```
 
 **What happens:**
 1. Requires a clean working tree (stops otherwise)
 2. Creates a backup branch of your current branch
-3. Rebases onto the origin branch (`git pull --rebase`)
-4. On conflict, triages whether to resolve in place or abort to a single merge based on how many commits remain
-5. Resolves conflicts by reconciling both sides — asks only on genuinely risky contradictions
-6. Offers a push — `--force-with-lease` on the rebase path, a plain fast-forward after the merge fallback — only if you confirm
-7. Deletes the backup automatically when safe; keeps it (with restore instructions) if anything went wrong
+3. Merges `origin/<your-branch>` first if teammates or agents pushed new commits, then merges the target origin branch
+4. Resolves conflicts by reconciling both sides — asks only on genuinely risky contradictions
+5. Offers a plain `git push origin HEAD` — only if you confirm; a rejected push is resolved with another merge
+6. Deletes the backup automatically when safe; keeps it (with restore instructions) if anything went wrong
 
 ---
 
