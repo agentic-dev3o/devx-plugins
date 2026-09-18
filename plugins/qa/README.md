@@ -84,6 +84,28 @@ Includes a playbook for TypeScript/Node, Python, Rust, and modern web app attack
 
 ---
 
+### babysit-pr
+
+Watches a PR's CI after you open it, diagnoses failing jobs, fixes what the branch broke, reruns genuine flakes, and pushes until the PR is green and mergeable.
+
+```
+babysit PR 42
+analyse PR jobs error and remediate until the PR is ready to merge
+watch CI on this branch
+```
+
+**What happens:**
+1. Blocks on `gh pr checks --watch --fail-fast` instead of polling by hand
+2. Pulls the failed job's log directly (`gh run view --job <id> --log-failed`) so diagnosis starts before the whole matrix finishes
+3. Classifies branch-caused vs flake/infra — fixes the first, reruns the second (3 reruns max)
+4. Commits, pushes, and re-enters the loop on the new SHA
+5. Checks mergeability and resolves base-branch conflicts
+6. Stops at green + mergeable, or at a blocker only you can clear
+
+Never merges the PR, replies to reviews, skips tests, or relaxes CI config to force green.
+
+---
+
 ### fixing-skills
 
 Evaluates and improves a plugin's skills by applying Anthropic's skill authoring best practices. Triggers when you ask to fix, improve, or review skills.
