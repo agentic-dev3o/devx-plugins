@@ -1,79 +1,134 @@
 ---
 name: babysit-pr
 description: >-
-  Watches a GitHub PR's CI, diagnoses failing jobs, fixes branch-caused failures,
-  reruns genuine flakes, and pushes until the PR is green and mergeable.
-  Triggers on: babysit PR, watch CI, PR jobs are failing, fix failing checks,
-  analyse PR job errors, make the PR ready to merge.
+  Monitors a GitHub pull request's checks with the gh CLI, reads the logs of failing
+  GitHub Actions jobs, fixes the failures the branch caused, reruns genuine infrastructure
+  flakes, and pushes until the PR is green and mergeable. Use when the user asks to babysit,
+  watch, or monitor a PR, says CI or checks are failing or red, asks to analyse PR job
+  errors and remediate them, or wants a PR driven to a ready-to-merge state after opening it.
 ---
 
 # Babysit PR
 
-Target: `$ARGUMENTS` (PR number or URL; empty means the PR of the current branch)
+Drive the pull request named in `$ARGUMENTS` (PR number or URL; empty means the PR of the
+current branch) to **green** — every required check passing, no merge conflict — or to a
+blocker only the user can clear.
 
-Loop until the PR is green and mergeable, or until a blocker only the user can clear.
 Do not stop on a single red check. Do not merge the PR.
 
-## Loop
+Track two budgets for the whole session and report both at the end:
 
-1. `gh pr checks $PR --watch --fail-fast --interval 20` — blocks until checks settle.
-   Exit 0 = green, 8 = still pending, non-zero otherwise = failure.
-2. Failure → **Diagnose**, then **Classify**.
-3. Branch-caused → fix, commit, `git push`, back to 1.
-4. Flake/infra → `gh run rerun <run-id> --failed`, back to 1. Budget: 3 reruns per PR, total.
-5. Green → `gh pr view $PR --json mergeable,mergeStateStatus,reviewDecision`.
-   `CONFLICTING` → merge the base branch, resolve, push, back to 1.
-6. Report and stop.
+- **3 reruns total** across the PR.
+- **2 fix attempts per failing job.** A third failure of the same job is a stop condition,
+  because the diagnosis is wrong and more pushes will not find it.
 
-## Diagnose
-
-Get the failing job URLs (they carry both run id and job id):
+## Step 1: Preflight
 
 ```bash
-gh pr checks $PR --json name,state,link -q '.[] | select(.state=="FAILURE") | "\(.name) \(.link)"'
+gh auth status
+PR=$(gh pr view $ARGUMENTS --json number -q .number)   # empty $ARGUMENTS → current branch's PR
+git status --short
 ```
 
-Read the log of the failed job, not the whole run:
+Stop and report if `gh` is missing, unauthenticated, or finds no PR for the branch.
+If the tree holds uncommitted changes unrelated to the PR, stop and ask — never stash silently.
+
+## Step 2: Watch
+
+```bash
+gh pr checks "$PR" --watch --fail-fast
+```
+
+This blocks until the checks settle, so no manual polling loop is needed. `--fail-fast` returns
+as soon as one check fails, instead of waiting out the rest of the matrix.
+
+Exit `0` = green → go to Step 6. Exit `8` = still pending → run it again. Any other exit
+code = a check failed → go to Step 3.
+
+## Step 3: Diagnose
+
+List the failing checks. Each `link` is a job URL of the form
+`.../actions/runs/<run-id>/job/<job-id>` — both ids come from it:
+
+```bash
+gh pr checks "$PR" --json name,state,link -q '.[] | select(.state=="FAILURE") | "\(.name) \(.link)"'
+```
+
+Read the log of the failing job, not of the whole run:
 
 ```bash
 gh run view <run-id> --job <job-id> --log-failed
 ```
 
-`gh run view --log-failed` without `--job` is run-scoped and stays empty until every job
-finishes — always pass `--job` so you can diagnose while the rest of the matrix still runs.
-If the zip-based fetch returns nothing: `gh api repos/{owner}/{repo}/actions/jobs/<job-id>/logs`.
+Always pass `--job`. Without it, `--log-failed` is scoped to the run and stays empty until
+every job finishes, so a matrix with one slow job blocks diagnosis entirely. If the log comes
+back empty anyway, fetch it from the API: `gh api repos/{owner}/{repo}/actions/jobs/<job-id>/logs`.
 
-Read the actual error before editing anything. When the failing step is cheap (lint, typecheck,
-unit tests), run the same command locally to confirm the fix instead of pushing to find out.
+Read the actual error text before editing anything. Never infer the cause from the job name.
 
-## Classify
+## Step 4: Classify
 
-**Branch-caused — fix it:** compile/type/lint/format errors, failing assertions touching the
-diff, snapshot mismatches, missing migration, stale lockfile or generated file, new dependency
-not installed, coverage threshold.
+**Branch-caused — fix it:** compile, type, lint, or format errors; failing assertions in code
+the diff touches; snapshot mismatches; missing migration; stale lockfile or generated file; a
+new dependency that was never installed; coverage below threshold.
 
-**Flake/infra — rerun it:** runner provisioning, network/registry/DNS timeouts, rate limits,
-cancelled or timed-out jobs, failures in tests the diff does not touch and that pass locally.
+**Infrastructure flake — rerun it:** runner provisioning failures; network, registry, or DNS
+timeouts; rate limits; cancelled or timed-out jobs; failures in tests the diff does not touch
+that pass when run locally.
 
-Ambiguous → diagnose once more before spending a rerun. Never make a failure disappear by
-editing CI config, skipping or deleting tests, relaxing lint rules, or pinning dependencies —
-unless the diff itself caused that config to be wrong.
+Ambiguous → read the log once more before spending a rerun. Never make a failure disappear by
+editing CI config, skipping or deleting tests, relaxing lint rules, or pinning dependencies,
+unless the diff itself is what made that config wrong.
 
-## Rules
+## Step 5: Act, then return to Step 2
 
-- Work on the PR head branch only. Never force-push, never rebase.
-- Unrelated uncommitted changes in the tree → stop and ask before touching anything.
-- One commit per fix, conventional format, e.g. `fix(ci): correct type error in auth handler`.
-- Read-only on GitHub apart from pushing: no merge, no review replies, no draft/close/label changes.
+**Branch-caused.** Before pushing, state the job, the root cause, and the intended fix in one
+line. Apply the fix, then **verify locally**: run the same command the job ran (lint,
+typecheck, and unit tests are cheap enough to be worth it every time). Only once it passes,
+commit with a conventional message scoped to the fix — `fix(auth): extend Request type with
+userId` — and `git push` to the PR head branch. Work on that branch only: never force-push,
+never rebase.
 
-Stop and hand back when: the 3-rerun budget is spent, the job needs a secret or permission you
-lack, the fix belongs to code the PR does not own, the same failure survives two fix attempts,
-or CI is green and the only thing left is human approval.
+**Infrastructure flake.** `gh run rerun <run-id> --failed`. Change no code. Decrement the
+rerun budget.
 
-## Report
+If both kinds of failure appear in the same run, push the fix first — the new commit
+retriggers every check anyway, so a rerun on the old SHA would be wasted.
+
+## Step 6: Confirm mergeability
+
+```bash
+gh pr view "$PR" --json mergeable,mergeStateStatus,reviewDecision
+```
+
+`CONFLICTING` → merge the base branch into the head branch, resolve the conflicts, push, and
+return to Step 2. Otherwise go to Step 7.
+
+## Step 7: Report
 
 - PR number and final SHA
-- Checks: passing/total, or which are still red
+- Checks: passing / total, or which remain red
 - Fixes pushed: commit → what it repaired
 - Reruns used, out of 3
 - What blocks the merge, if anything
+
+## Stop conditions
+
+Stop and hand back, with the report above, when any of these is true:
+
+- The PR is green and mergeable, and only human approval remains.
+- The rerun budget is spent, or one job has failed 3 times.
+- The job needs a secret, token, or permission that is unavailable.
+- The fix belongs to code this PR does not own.
+
+Everything on GitHub other than pushing to the head branch is out of scope: no merging, no
+review replies, no draft, close, or label changes.
+
+## Example
+
+The `build (node 20)` job fails with `TS2339: Property 'userId' does not exist on type
+'Request'`, and the PR touches `src/middleware/auth.ts`. Branch-caused — the type augmentation
+was never updated. Fix it, confirm with `npm run typecheck`, commit, push, return to Step 2.
+
+In the same run, `e2e` fails with `Error: connect ETIMEDOUT registry.npmjs.org`. Infrastructure
+— the push above already retriggers it, so no rerun is spent.
