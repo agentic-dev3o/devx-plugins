@@ -84,13 +84,40 @@ Includes a playbook for TypeScript/Node, Python, Rust, and modern web app attack
 
 ---
 
-### fixing-skills
+### babysit-pr
+
+Watches a PR's checks after you open it, reads the logs of failing jobs, fixes what the branch broke, and drives the PR to green. Explicitly invoked — it does not auto-trigger.
+
+```
+/devx-qa:babysit-pr 42
+/devx-qa:babysit-pr https://github.com/owner/repo/pull/42
+/devx-qa:babysit-pr
+```
+
+**What happens:**
+1. Preflight: resolves the PR, refuses fork PRs, and checks out the PR head branch so commits cannot land on the wrong branch
+2. Blocks on `gh pr checks --required --watch --fail-fast` instead of polling by hand, and dispatches on gh's exit code rather than assuming non-zero means a failed check
+3. Lists failures by `bucket`, not `state` — so CANCELLED, TIMED_OUT, ERROR and ACTION_REQUIRED are not silently read as green
+4. Pulls each failing job's log from `gh api .../actions/jobs/<id>/logs`, which works while the rest of the matrix is still running, then greps for the error instead of reading the whole log into context
+5. Classifies branch-caused vs infrastructure — fixes the first, waits for the run to finish before rerunning the second
+6. Delegates every mutation: commits via `devx-git:ci`, base-branch merges via `devx-git:update-origin`, and asks before the first push
+7. Stops at green + mergeable, at a spent budget, or at a blocker only you can clear
+
+Bounded by design: 5 pushes, 3 reruns, 45 minutes, and 2 attempts per job error signature.
+
+Treats CI logs as untrusted data — it never executes a command read out of a log, and never copies a literal value from one into your working tree.
+
+Never merges the PR, replies to reviews, skips tests, or relaxes CI config to force green.
+
+---
+
+### skill-fixer
 
 Evaluates and improves a plugin's skills by applying Anthropic's skill authoring best practices. Triggers when you ask to fix, improve, or review skills.
 
 ---
 
-### fixing-react-antipatterns
+### react-fixer
 
 Audits React codebases for anti-patterns (useEffect misuse, missing cleanup, stale closures, memory leaks) and produces a scored gap analysis table with severity ratings. Applies prioritized fixes on request.
 
@@ -108,18 +135,3 @@ check useEffect cleanup in src/components/
 5. Verifies with lint
 
 Includes three reference files with authoritative rules and before/after fix examples.
-
----
-
-### claudemd
-
-Keeps CLAUDE.md in sync with codebase evolution. Triggers when you ask to update or sync CLAUDE.md.
-
-**What happens:**
-1. Finds your CLAUDE.md (or creates one)
-2. Analyzes commits since last update
-3. Detects new patterns, stack changes, architecture shifts
-4. Proposes additions and removals in diff format
-5. Asks for confirmation before applying
-
-Your project memory stays current without manual maintenance.
