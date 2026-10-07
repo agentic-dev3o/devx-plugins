@@ -67,6 +67,7 @@ Every command in this marketplace comes from real, daily usage — refined over 
 | [**devx-qa**](plugins/qa/) | Architecture analysis, code review, appsec review, PR CI babysitting & React/skill audits | `/plugin install devx-qa@devx-plugins` |
 | [**secrets-guard**](plugins/secrets-guard/) | Blocks Claude from accessing sensitive files (70+ patterns) | `/plugin install secrets-guard@devx-plugins` |
 | [**landing-page**](plugins/landing-page/) | Structured copywriting & Astro 5 landing page generation | `/plugin install landing-page@devx-plugins` |
+| [**phosphorons**](plugins/phosphorons/) | Entretien de définition produit sans complaisance, qui aboutit à une spec fonctionnelle prête pour la maquette et le développement (en français) | `/plugin install phosphorons@devx-plugins` |
 | [**nano-banana-ultimate**](plugins/nano-banana-ultimate/) | Image generation via Gemini with 8 domain-specialized skills | `/plugin install nano-banana-ultimate@devx-plugins` |
 
 ---

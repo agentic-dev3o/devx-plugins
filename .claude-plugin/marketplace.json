@@ -73,6 +73,17 @@
       },
       "source": "./plugins/agentic-engineering",
       "category": "development"
+    },
+    {
+      "name": "phosphorons",
+      "description": "Phosphorer sur son produit jusqu'à ce qu'il tienne la route : personas, pari, principes, fonctionnalités, puis une spécification fonctionnelle prête pour la maquette et le développement",
+      "version": "0.1.0",
+      "author": {
+        "name": "Pierre Tomasina",
+        "email": "contact@dev3o.com"
+      },
+      "source": "./plugins/phosphorons",
+      "category": "productivity"
     }
   ]
 }
