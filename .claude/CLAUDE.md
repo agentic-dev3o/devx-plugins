@@ -19,6 +19,7 @@ devx-plugins/
         ├── commands/         # Slash commands
         ├── agents/           # Autonomous agents (optional)
         ├── skills/           # Knowledge/skill definitions (optional)
+        ├── workflows/        # Workflow scripts that fan out agents (optional)
         └── hooks/            # Event hooks (optional)
 ```
 
@@ -29,6 +30,7 @@ Each plugin follows this pattern:
 - **`commands/*.md`** - Slash commands (markdown with YAML frontmatter)
 - **`agents/*.md`** - Agent definitions (optional)
 - **`skills/`** - Skill definitions with SKILL.md and supporting files (optional)
+- **`workflows/*.js`** - Workflow scripts, run as `/<plugin>:<meta.name>` (optional)
 
 ## Command Development Guidelines
 
@@ -54,7 +56,7 @@ Inline bash execution uses `!` syntax: `!`git status``
 | Plugin | Purpose | Commands |
 |--------|---------|----------|
 | devx-git | Git workflow automation | `/ci`, `/pr`, `/update-origin` (skills) |
-| devx-qa | Architecture analysis, code review, appsec review, PR CI babysitting, harness fixing, skill improvement & React auditing | `/explaining-architecture`, `/code-review`, `/appsec-review`, `/babysit-pr`, `/harness-fixer`, `/skill-fixer`, `/react-fixer` (skills) |
+| devx-qa | Architecture analysis, code review, appsec review, PR CI babysitting, dead code removal, harness fixing, skill improvement & React auditing | `/explaining-architecture`, `/code-review`, `/appsec-review`, `/babysit-pr`, `/dead-code-fixer`, `/harness-fixer`, `/skill-fixer`, `/react-fixer` (skills) |
 | secrets-guard | Block access to secret/sensitive files | hooks only |
 | landing-page | Structured copywriting & Astro 5 landing pages | `/writing-landing-page-copy`, `/building-landing-page` (skills) |
 | agentic-engineering | Audit agents/tool-loops/inference and rewrite prompts via Anthropic best practices | `/auditing-agentic-systems`, `/optimizing-prompts` (skills) |
