@@ -24,16 +24,16 @@ Rédige la page dans la langue de l'utilisateur. Chaque affirmation doit avoir �
 9. **Hors périmètre** : ce que le produit ne fera pas, et pourquoi.
 10. **Décisions et règles** : le journal des décisions (décision, justification, date) et les règles permanentes.
 11. **Contradictions et questions ouvertes** : sujet, type (contradiction ou question), ce que ça bloque, qui tranche.
-12. **Prochaines étapes** : le brief de maquette (écrans par ordre de priorité, avec l'état le plus important de chacun) et l'ordre de développement conseillé (la plus petite tranche qui permet de tester le pari).
+12. **Prochaines étapes** : le brief de maquette (écrans par ordre de priorité, avec l'état le plus important de chacun) et l'ordre de développement conseillé (la plus petite tranche qui permet de tester le pari). C'est la seule section que tu proposes au lieu de la reprendre de la session : elle porte le badge « Proposition ».
 
 ## Mise en forme
 
 - **Un seul fichier autonome** : le CSS dans une balise `<style>`, aucune dépendance hormis le script Mermaid.
 - **Une mise en page au service du contenu**, pas du markdown converti : fiches pour les personas, encadré pour le pari et ce qui l'invaliderait, tableaux pour la carte des fonctionnalités et le modèle de données, grille pour l'inventaire des écrans.
 - **Une navigation** : un sommaire à ancres en tête de page, ou en colonne latérale sur grand écran.
-- **Des statuts visibles** : des badges « Hypothèse » et « À trancher » repérables d'un coup d'œil.
+- **Des statuts visibles** : des badges « Hypothèse », « À trancher » et « Proposition » repérables d'un coup d'œil.
 - **Lisible partout** : la prose limitée à ~70 caractères par ligne, une typographie système, un contraste suffisant, les thèmes clair et sombre via `prefers-color-scheme`, une mise en page qui tient sur mobile (tableaux défilables horizontalement) et s'imprime proprement (`@media print`).
-- **Des diagrammes Mermaid** dans des blocs `<pre class="mermaid">` : leur code reste lisible si le script ne se charge pas. Échappe `<` et `&` dans les libellés.
+- **Des diagrammes Mermaid** dans des blocs `<pre class="mermaid">` : leur code reste lisible si le script ne se charge pas. Échappe `<` et `&` dans les libellés. Dessine les parcours de haut en bas (`flowchart TB`) : de gauche à droite, ils deviennent illisibles sur un téléphone. Garde les diagrammes à leur taille naturelle, avec un défilement horizontal dans leur cadre plutôt qu'un rétrécissement.
 - **Une page accessible** : l'attribut `lang` sur `<html>`, des titres hiérarchisés (un seul `h1`, puis `h2` et `h3`), des en-têtes `<th>` dans les tableaux.
 
 ## Exemples de diagrammes
@@ -42,7 +42,7 @@ Un parcours, avec un couloir par acteur ; chaque point de décision a ses deux i
 
 ```html
 <pre class="mermaid">
-flowchart LR
+flowchart TB
   subgraph P[Gérant]
     p1[Valide la relance]
     p2[Corrige l'adresse e-mail]
@@ -93,7 +93,8 @@ Un point de départ à adapter librement, pas un cadre imposé.
     body { margin: 0; background: var(--fond); color: var(--texte); font: 16px/1.6 system-ui, sans-serif; }
     main { max-width: 960px; margin: 0 auto; padding: 32px 16px; }
     p, li { max-width: 70ch; }
-    .tableau { overflow-x: auto; }
+    .tableau, .mermaid { overflow-x: auto; }
+    .mermaid svg { max-width: none !important; }
     table { width: 100%; border-collapse: collapse; }
     th, td { padding: 8px; border-bottom: 1px solid var(--trait); text-align: left; vertical-align: top; }
     .badge { display: inline-block; padding: 2px 8px; border: 1px solid var(--trait); border-radius: 999px; font-size: 12px; color: var(--discret); }

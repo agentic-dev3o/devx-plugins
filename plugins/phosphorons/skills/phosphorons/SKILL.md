@@ -167,11 +167,13 @@ La session est terminée quand plus aucune question n'est débloquée : chaque b
 
 Produis la spec sous forme d'une **page HTML autonome**, à l'emplacement convenu. Le HTML te laisse composer une mise en page sur mesure, plus lisible qu'un document linéaire : sommaire cliquable, personas en fiches, carte des fonctionnalités en tableau, parcours en diagrammes, écrans en grille. Le contenu attendu, les règles de mise en forme et un squelette de départ sont dans [references/gabarit-spec-fonctionnelle.md](references/gabarit-spec-fonctionnelle.md).
 
+Si la rédaction révèle un point que la session n'a pas tranché, il devient une question ouverte et sa section affiche « À trancher » : ne le tranche jamais toi-même.
+
 **Si tu es Claude** et que tu peux créer des Artifacts, livre la spec sous forme d'Artifact HTML : l'utilisateur obtient une page lisible et partageable. Dans un dépôt, enregistre aussi le fichier.
 
 Avant de livrer, relis la page avec cette liste. Corrige, puis relis, tant qu'un point échoue :
 
-- [ ] Chaque affirmation a été tranchée pendant la session ; chaque hypothèse acceptée porte son badge « Hypothèse ».
+- [ ] Chaque affirmation a été tranchée pendant la session ; chaque hypothèse acceptée porte son badge « Hypothèse », et les prochaines étapes, seule partie que tu proposes, portent le badge « Proposition ».
 - [ ] Le pari, ce qui l'invaliderait et l'intention de chaque fonctionnalité viennent de l'utilisateur, pas de toi.
 - [ ] Aucune question de marché n'a été imposée à un outil personnel ou interne.
 - [ ] Chaque fonctionnalité v1 a un persona, une intention et des critères de succès observables.
