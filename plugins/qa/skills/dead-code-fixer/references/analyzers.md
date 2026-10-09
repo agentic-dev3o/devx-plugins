@@ -1,8 +1,8 @@
 # Analyzers
 
-Run each analyzer from the repository root unless noted. Write its report inside `.dead-code/`, which git ignores, then import it with `ledger.py import`. Never write a report to the repository root: knip, for one, reads a `knip.json` there as its own configuration.
+Run every analyzer through the ledger: `ledger.py analyze --tool <tool> [--base <dir>] [--output <file>] -- <command>`. The ledger runs the command without a shell, keeps the report in `.dead-code/analyzers/`, imports it, and records the command so `ledger.py analyze --again` repeats it in later rounds. `--base` is the directory the command runs in, relative to the repository root; the ledger reads the report's paths relative to it. `--output` names the file a tool writes its report to, when it does not print it.
 
-`npx -y`, `uvx` and `go run ...@latest` run a tool without adding it to the project. Never add a dependency or a configuration file to the project to make an analyzer run without asking the user first.
+`npx -y`, `uvx` and `go run ...@latest` run a tool without adding it to the project. Never add a dependency or a configuration file to the project to make an analyzer run without asking the user first. When a finding names a file that does not exist, `analyze` says so: re-run with the right `--base`.
 
 ## Contents
 
@@ -24,13 +24,12 @@ For each language with source files in scope, run its analyzer when it works her
 ## JavaScript and TypeScript: knip
 
 ```bash
-npx -y knip@6 --reporter json --no-progress > .dead-code/knip.json
-ledger.py import --tool knip .dead-code/knip.json
+ledger.py analyze --tool knip -- npx -y knip@6 --reporter json --no-progress
 ```
 
-- When knip is already in `devDependencies`, run the project's own version (`npx knip ...`), which picks up the project's knip configuration.
-- Exit code 1 means it found issues; 2 means it failed. Read stderr: a configuration error usually means a framework plugin needs a config file. Do not create one without asking; scan those files instead.
-- Monorepos: knip reads the workspaces itself. Limit it to one package with `--workspace <dir>`.
+- When knip is already in `devDependencies`, run the project's own version (`-- npx knip --reporter json --no-progress`), which picks up the project's knip configuration.
+- Exit code 1 means it found issues; 2 means it failed, and `analyze` prints its stderr. A configuration error usually means a framework plugin needs a config file. Do not create one without asking; scan those files instead.
+- Monorepos: knip reads the workspaces itself and reports paths from the root. Limit it to one package with `--workspace <dir>`.
 - It reports unused files, exports, types, enum and namespace members, and dependencies. Since version 6 it no longer reports class members: add scanners (`--ext ts --ext tsx`) when unused methods matter.
 - Blind spots: computed `import()`, CommonJS `module.fn()` access, and `.vue` or `.svelte` files without their compiler installed. The dynamic lens covers them.
 - Never run `knip --fix`: removals go through the verifiers and the gate.
@@ -38,8 +37,7 @@ ledger.py import --tool knip .dead-code/knip.json
 ## Python: vulture
 
 ```bash
-uvx vulture <source directories, without the tests> --min-confidence 60 > .dead-code/vulture.txt
-ledger.py import --tool vulture .dead-code/vulture.txt
+ledger.py analyze --tool vulture -- uvx vulture <source directories, without the tests> --min-confidence 60
 ```
 
 - Leave the test directories out. Vulture then reports code that only tests use, and the reference count files it as test-only instead of deleting it.
@@ -50,12 +48,11 @@ ledger.py import --tool vulture .dead-code/vulture.txt
 ## Go: deadcode and staticcheck
 
 ```bash
-go run golang.org/x/tools/cmd/deadcode@latest -test -json ./... > .dead-code/deadcode.json
-go run honnef.co/go/tools/cmd/staticcheck@latest -checks U1000 -f json ./... > .dead-code/staticcheck.jsonl
-ledger.py import --tool deadcode .dead-code/deadcode.json
-ledger.py import --tool staticcheck .dead-code/staticcheck.jsonl
+ledger.py analyze --tool deadcode -- go run golang.org/x/tools/cmd/deadcode@latest -test -json ./...
+ledger.py analyze --tool staticcheck -- go run honnef.co/go/tools/cmd/staticcheck@latest -checks U1000 -f json ./...
 ```
 
+- In a repository whose `go.mod` sits in a subdirectory, add `--base <that directory>`.
 - deadcode follows calls from the `main` packages and exits 0 even when it finds dead code. In a library without a `main` package it stops with `no main packages`; use staticcheck alone there.
 - staticcheck U1000 reports unexported identifiers only, because exported ones always count as used.
 - Both analyze one GOOS, GOARCH and build-tag combination, so code behind other tags looks dead to them. The boundary lens checks build tags.
@@ -63,21 +60,19 @@ ledger.py import --tool staticcheck .dead-code/staticcheck.jsonl
 ## Rust: rustc
 
 ```bash
-cargo check --workspace --all-targets --message-format=json > .dead-code/cargo.jsonl
-ledger.py import --tool cargo .dead-code/cargo.jsonl
+ledger.py analyze --tool cargo -- cargo check --workspace --all-targets --message-format=json
 ```
 
-- The import keeps `dead_code` warnings only. `cargo clippy --fix` handles the other `unused_*` lints.
+- rustc reports paths relative to the workspace root: when the workspace is in a subdirectory, add `--base <that directory>`.
+- The import keeps `dead_code` warnings only, including groups such as `multiple methods are never used`. `cargo clippy --fix` handles the other `unused_*` lints.
 - rustc never reports a library's `pub` items. To catch unused `pub` items across a workspace, scan as well (`ledger.py shard --ext rs`) and let the reference count decide.
-- Messages repeat once per target; the import deduplicates them.
 
 ## PHP: PHPStan with shipmonk dead-code-detector
 
 Only when `shipmonk/dead-code-detector` is already in `composer.json`:
 
 ```bash
-vendor/bin/phpstan analyse --error-format=json --no-progress > .dead-code/phpstan.json
-ledger.py import --tool phpstan .dead-code/phpstan.json
+ledger.py analyze --tool phpstan -- vendor/bin/phpstan analyse --error-format=json --no-progress
 ```
 
 - The import keeps the `shipmonk.dead*` errors: methods, constants, enum cases and properties. The detector understands Symfony, Laravel, Doctrine, PHPUnit and Twig.
@@ -88,8 +83,7 @@ ledger.py import --tool phpstan .dead-code/phpstan.json
 Only when `debride` is installed:
 
 ```bash
-debride --json lib app > .dead-code/debride.json
-ledger.py import --tool debride .dead-code/debride.json
+ledger.py analyze --tool debride -- debride --json lib app
 ```
 
 - It matches method names only and always exits 0. Rails callbacks and `send` are its blind spots; the dynamic lens covers them.
@@ -97,16 +91,29 @@ ledger.py import --tool debride .dead-code/debride.json
 
 ## Java, Kotlin and C#: SARIF
 
-When the project already runs one of these tools, have it write SARIF into `.dead-code/` and import it, keeping the dead-code rules:
+When the project already runs one of these tools, import its SARIF log and keep the dead-code rules:
 
-- PMD: `pmd check -d src/main/java -R category/java/bestpractices.xml/UnusedPrivateMethod,category/java/bestpractices.xml/UnusedPrivateField -f sarif -r .dead-code/pmd.sarif --no-progress`
-- detekt: add `-r sarif:.dead-code/detekt.sarif`; the rules are UnusedPrivateClass, UnusedPrivateMember and UnusedPrivateProperty.
-- .NET: `dotnet build -p:EnforceCodeStyleInBuild=true "-p:ErrorLog=.dead-code/dotnet.sarif%2Cversion=2.1"` reports IDE0051 and IDE0052 once `.editorconfig` raises them to warnings.
+Java, with PMD:
 
 ```bash
-ledger.py import --tool sarif .dead-code/pmd.sarif --rule UnusedPrivateMethod --rule UnusedPrivateField
+ledger.py analyze --tool sarif --output .dead-code/pmd.sarif --rule UnusedPrivateMethod --rule UnusedPrivateField -- pmd check -d src/main/java -R category/java/bestpractices.xml/UnusedPrivateMethod,category/java/bestpractices.xml/UnusedPrivateField -f sarif -r .dead-code/pmd.sarif --no-progress
 ```
 
+Kotlin, with the detekt command-line tool (`detekt` or `detekt-cli`):
+
+```bash
+ledger.py analyze --tool sarif --output .dead-code/detekt.sarif --rule UnusedPrivateClass --rule UnusedPrivateMember --rule UnusedPrivateProperty -- detekt --input src/main/kotlin --build-upon-default-config --report sarif:.dead-code/detekt.sarif
+```
+
+C#, only when the repository's `.editorconfig` already raises IDE0051 and IDE0052 to warnings (`dotnet_diagnostic.IDE0051.severity = warning`); otherwise scan. Give both paths absolute, because MSBuild resolves `ErrorLog` relative to each project:
+
+```bash
+ledger.py analyze --tool sarif --output <root>/.dead-code/dotnet.sarif --rule IDE0051 --rule IDE0052 -- dotnet build -p:EnforceCodeStyleInBuild=true "-p:ErrorLog=<root>/.dead-code/dotnet.sarif%2Cversion=2.1"
+```
+
+- Each tool signals findings its own way (PMD exits 4, detekt 2), and `analyze` knows which exit codes still mean a complete report. A dotnet build that fails leaves an incomplete log, so it counts as a failure.
+- With a solution of several projects, every project overwrites the same `ErrorLog`: build them one at a time, with a different report name for each.
+- The import decodes `file:` URIs and resolves `uriBaseId`, so paths with spaces or accents land on the right file.
 - These tools see private members only. Scan as well (`--ext java --ext kt --ext cs`) to cover public declarations.
 - Spring, Jakarta, Jackson, Lombok and DI annotations reach code through reflection. The dynamic lens checks them; never shortcut it for annotated code.
 

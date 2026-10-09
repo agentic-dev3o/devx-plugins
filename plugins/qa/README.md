@@ -113,30 +113,33 @@ Never merges the PR, replies to reviews, skips tests, or relaxes CI config to fo
 
 ### dead-code-fixer
 
-Finds and removes dead code across a whole repository, including one far too large for a single context window. Your session (Opus 5.5 or Fable recommended) orchestrates; Haiku subagents do the bulk reading; a bookkeeping script keeps every candidate and vote on disk. Explicitly invoked — it does not auto-trigger.
+Finds and removes dead code across a whole repository, including one far too large for a single context window. Your session (Opus 5.5 or Fable recommended) orchestrates; Haiku 5.5 subagents do the bulk reading; a bookkeeping script, `ledger.py`, keeps every candidate, vote and removal on disk and tells the orchestrator its next step. Explicitly invoked — it does not auto-trigger.
 
 ```
 /devx-qa:dead-code-fixer
 /devx-qa:dead-code-fixer packages/api
 /devx-qa:dead-code-fixer --report-only
+/devx-qa:dead-code-fixer --yes          # approve deletions up front, for unattended runs
 ```
 
 **What happens:**
-1. Preflight: clean tree, a `dead-code/<date>` branch, the project's own type-check and test commands run green before anything changes, and the public boundary (published API, entry points, framework conventions) written down as facts every verifier receives
-2. Detect: knip, vulture, rustc, deadcode/staticcheck, PHPStan, debride or SARIF produce candidates where they apply; Haiku scanners inventory the languages no analyzer covers; one deterministic pass counts every mention of every candidate across all tracked files, configs and templates included
+1. Preflight: resume an interrupted run if one exists; otherwise a clean tree, a `dead-code/<date>` branch, the project's own type-check and test commands (or the toolchain's standard ones) run green before anything changes, and the public boundary (published API, entry points, framework conventions) written down as facts every verifier receives
+2. Detect: knip, vulture, rustc, deadcode/staticcheck, PHPStan, debride or SARIF (PMD, detekt, .NET) run through the ledger, which keeps their reports and re-runs them each round; Haiku scanners inventory the languages no analyzer covers; one deterministic pass counts every mention of every candidate across all tracked files, configs and templates included, with prose counted apart
 3. Verify: three Haiku verifiers per candidate, one lens each — real references, runtime reachability (reflection, string dispatch, decorators, config, templates), outside consumers (public API, entry points, remote callers). Each lens only sees what the previous one voted dead; deletion needs all three at confidence ≥ 80, tallied by the script, never by a model
-4. Spot-check: the orchestrator re-checks three confirmed-dead candidates itself, then asks before the first deletion
-5. Remove in waves of file-disjoint units: Haiku removers delete, the script refuses any change outside the wave, the type-check gates every wave, one commit per green wave; a unit that breaks the gate is reverted and recorded as alive
-6. Iterate: the test suite gates each round, and rounds repeat until one removes nothing — deleting code orphans more code
+4. Spot-check and confirm: the orchestrator re-reads the riskiest confirmed-dead candidates itself — the script refuses to remove anything before it does — then asks before the first deletion (`--yes` answers for you)
+5. Remove in waves of file-disjoint units: Haiku removers delete, the script compares each unit's diff with what it was given and rejects anything else, the type-check gates every wave, and one commit per green wave. A unit that breaks the gate is reverted and recorded as alive; when the error names no unit, the script finds the culprits by re-running the gate on halves of the wave
+6. Iterate: the test suite gates each round; when it fails, the script reverts the round's wave commits one at a time to find the one at fault, and `git revert` undoes it. Rounds repeat until one removes nothing — deleting code orphans more code
 7. Report: removed, reverted by the gate, left for a human, test-only code, unused dependencies, and what was not scanned and why
 
 The fan-out runs as the `devx-qa:dead-code-fanout` workflow (16 agents at a time, one completion notice per stage), with a fallback to plain subagents when workflows are unavailable. Every unit is sized so each Haiku 5.5 request stays below 100k tokens, the threshold above which Haiku 5.5 costs five times more.
 
-**Requirements:** git, Python 3.8+, and Claude Code 2.1.293 or later, where the `haiku` alias resolves to Haiku 5.5 on the Anthropic API. On Bedrock, Vertex AI or Foundry the alias still means Haiku 4.5; set `ANTHROPIC_DEFAULT_HAIKU_MODEL` to change it. Runs go smoothest in auto mode, since the agents' reads and edits and each workflow launch otherwise ask for approval.
+**Requirements:** git, Python 3.8+, and Claude Code 2.1.293 or later, where the `haiku` alias resolves to Haiku 5.5 on the Anthropic API. On Bedrock, Vertex AI or Foundry the alias still means Haiku 4.5; set `ANTHROPIC_DEFAULT_HAIKU_MODEL` to change it.
+
+**Permissions:** a run spans many turns, and the skill's pre-approved tools only cover the first. Use auto mode, or allow `Bash(python3 "<skill dir>/scripts/ledger.py" *)` (the directory contains the plugin version; the ledger runs the gate commands recorded at the start, so approve it only where you trust them), `Workflow(devx-qa:dead-code-fanout)`, the `git switch`, `status`, `log` and `revert` commands, and `Edit(./**)` or `acceptEdits` mode for the agents and removers. Unattended runs (`claude -p`) also need `--yes` and `CLAUDE_CODE_PRINT_BG_WAIT_CEILING_MS=0`, so the session waits for long workflows.
 
 Never pushes, never rewrites history (`git revert` only), never deletes migrations, generated or vendored code, and never edits code to make a gate pass. Repository text is treated as data: a comment telling agents what to delete changes nothing.
 
-`scripts/test_ledger.py` checks the bookkeeping script end to end without a model.
+`scripts/test_ledger.py` checks the bookkeeping script end to end without a model; `evals/` builds six fixture repositories with ground truth and runs and grades the whole skill on them headless (see `EVALUATIONS.md`).
 
 ---
 

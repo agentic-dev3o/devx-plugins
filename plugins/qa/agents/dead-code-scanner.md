@@ -31,10 +31,13 @@ Read every file in `files` completely. For a long file, read it in pages with of
 | module-level constant or variable | `variable` |
 | field, property, enum case, or constant inside a type | `member` |
 
-Leave out what runs by mechanism rather than by name, because a reference count would misread it:
+## What never to list
 
-- constructors, destructors, operator overloads, and magic methods (`__init__`, `__str__`, `toString`, `equals`, `hashCode`)
-- framework lifecycle hooks (`componentDidMount`, `ngOnInit`, `setUp`, `viewDidLoad`)
+These run by mechanism rather than by name, so a reference count would misread them. Before you write, check every line against this list and drop the ones that match:
+
+- constructors and destructors: `initialize`, `__init__`, `constructor`, `__construct`, `init`, `new` when it builds the type, `finalize`, `__del__`, `Drop::drop`
+- magic and protocol methods: `__str__`, `__repr__`, `__eq__`, `to_s`, `inspect`, `toString`, `equals`, `hashCode`, `compareTo`, operator overloads
+- framework lifecycle hooks: `componentDidMount`, `ngOnInit`, `setUp`, `tearDown`, `viewDidLoad`
 - methods that override or implement a base class or interface method
 - `main` and other program entry points
 - local variables, parameters, imports, and anything declared inside a function body
@@ -57,7 +60,7 @@ Write `output` once, with the Write tool, as JSON Lines: one object per line, no
 - `markers`: decorators, annotations or attributes on the declaration, verbatim and short (`@app.route("/users")`, `@Injectable()`, `[HttpGet]`, `#[no_mangle]`). Omit the key when there are none. They tell the verifiers that a framework may call the declaration.
 - A file you could not read gets a `skipped` line instead.
 
-Finish every file before you write the output; do not stop early. Then return a receipt: the unit id, the number of declarations written, and `done`, or `partial` if you skipped a file.
+Finish every file before you write the output; do not stop early. Then return a receipt: `unit` is the id in your unit file's name (`s004` for `units/s004.json`); `items` is the number of declaration lines you wrote; `status` is `done` when every file was read, `partial` when you skipped one, and `failed`, with the reason in `note`, when you could not read the unit file or write `output`.
 
 ## Rules
 
