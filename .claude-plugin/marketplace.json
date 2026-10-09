@@ -21,8 +21,8 @@
     },
     {
       "name": "devx-qa",
-      "description": "Quality assurance toolkit to analyze codebases, review code changes, perform focused appsec reviews, babysit PR CI until green, audit React patterns, fix the agentic harness, and improve skills",
-      "version": "1.6.0",
+      "description": "Quality assurance toolkit to analyze codebases, review code changes, perform focused appsec reviews, babysit PR CI until green, remove dead code with verified Haiku subagents, audit React patterns, fix the agentic harness, and improve skills",
+      "version": "1.7.0",
       "author": {
         "name": "Pierre Tomasina",
         "email": "contact@dev3o.com"
