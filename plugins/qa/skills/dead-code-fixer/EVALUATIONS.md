@@ -2,7 +2,7 @@
 
 Three layers check the skill. Re-run all three after any change to the skill, the agents, the workflow or `ledger.py`.
 
-1. `scripts/test_ledger.py` walks the bookkeeping script through whole runs with fake agent outputs. No model, about a minute.
+1. `scripts/test_ledger.py` walks the bookkeeping script through whole runs with fake agent outputs, and the diff guard through the shapes of edit it must accept or refuse. No model, about seven minutes.
 2. The component evaluation runs each Haiku agent as itself (`claude -p --agent devx-qa:dead-code-<role>`) on fixed units, three trials each, and grades every vote and every edit against ground truth. It measures the agent prompts in isolation, so an A/B between two prompt versions takes one command.
 3. The end-to-end evaluation runs `/devx-qa:dead-code-fixer --yes` headless on fixture repositories with known dead and live code, and grades what is left in the repository afterwards.
 
@@ -60,6 +60,9 @@ End to end, `--yes`, one run per fixture:
 | v2 | 13 of 19: py-hard and rb-app stopped at report-only, no gate found | 0 | 6 of 6 | $0.72–1.36 | 2–4 min |
 | v3 | 19 of 19, including `old-pricing` in round 2 | 0 | 6 of 6 | $0.91–1.43 | 2–4.5 min |
 | v4 | 19 of 19, and the two files the removals left empty, deleted in round 2 | 0 | 6 of 6 | $0.89–1.51 | 2–4 min |
+| v6 (after the review of `ledger.py` and its fixes), 2026-10-19, Claude Code 2.1.303 | 19 of 19 | 0 | 6 of 6 | $0.95–1.55 | 2.5–5.5 min |
+
+A first v6 run removed nothing on js-hard. A verifier had listed a comment that names `formatLegacy` as a site to edit; the remover rewrote it, and the stricter diff guard rejected the unit three times. Separately, `syncInventory`, only mentioned in a comment, held its dead file. The ledger now drops sites that are only comments, and a name that is merely mentioned elsewhere no longer holds a file its three lenses found unreachable.
 
 Component evaluation, three trials per lens, fixed units, each agent run as itself with its own tools:
 

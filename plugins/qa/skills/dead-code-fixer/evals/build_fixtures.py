@@ -240,8 +240,10 @@ FIXTURES = {
 
 
 def git(root: Path, *args: str) -> None:
-    subprocess.run(["git", "-c", "user.email=eval@example.com", "-c", "user.name=eval", *args], cwd=root,
-                   check=True, capture_output=True)
+    # A fixture is a throwaway repository: never signed, whatever the user's git config says (a signing key
+    # would prompt for its passphrase in the middle of a headless run).
+    subprocess.run(["git", "-c", "user.email=eval@example.com", "-c", "user.name=eval", "-c", "commit.gpgsign=false",
+                    *args], cwd=root, check=True, capture_output=True)
 
 
 def main(out: Path) -> None:

@@ -17,6 +17,10 @@ rm -rf "$run"
 mkdir -p "$(dirname "$run")"
 cp -a "$base/fixtures/$fixture" "$run"
 cd "$run" || exit 2
+# The run commits its waves in the throwaway copy: never with the user's signing key, which would wait for a
+# passphrase in the middle of the headless session.
+export GIT_CONFIG_COUNT=2 GIT_CONFIG_KEY_0=commit.gpgsign GIT_CONFIG_VALUE_0=false GIT_CONFIG_KEY_1=tag.gpgsign \
+  GIT_CONFIG_VALUE_1=false
 start=$(date +%s)
 # The installed copy of devx-qa is disabled so the session loads only the plugin under test.
 CLAUDE_CODE_PRINT_BG_WAIT_CEILING_MS=0 timeout 5400 claude -p \
