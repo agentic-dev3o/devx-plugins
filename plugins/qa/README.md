@@ -143,6 +143,69 @@ Never pushes, never rewrites history (`git revert` only), never deletes migratio
 
 ---
 
+### sec-patching-ts
+
+Ships a production security hotfix for vulnerable npm dependencies in a TypeScript or Node.js repository (npm, pnpm, Yarn Berry, Yarn Classic or Bun). Explicitly invoked — it does not auto-trigger.
+
+```
+/devx-qa:sec-patching-ts
+/devx-qa:sec-patching-ts GHSA-xxxx-xxxx-xxxx CVE-2026-12345
+/devx-qa:sec-patching-ts audit.json --prod-ref v1.4.2
+/devx-qa:sec-patching-ts --report-only
+/devx-qa:sec-patching-ts --automerge     # merge once green
+/devx-qa:sec-patching-ts --release       # merge and ship to production
+```
+
+**Trust but verify.** It trusts the package manager to resolve a patched version, and verifies the rest itself before anything new runs. This is what a native `npm audit fix` cannot do:
+- **The vulnerability:** the advisory exists in the GitHub Advisory Database, is not withdrawn, and the version production runs is in its affected range. Exposure is recorded: whether the package ships, and whether the app reaches the vulnerable API.
+- **The patch:** the trace runs from the advisory to the fix commit, the release tag containing it, and the published version. The registry record is checked for the publisher, a release younger than 72 h, provenance, install scripts and new dependencies. The tarball diff (`npm diff`) is read for the fix itself and for malware indicators.
+- **The application:** release notes, the `package.json` and `.d.ts` diffs, and every API the app imports from the package. The typecheck and the tests, compared with a baseline, then confirm.
+
+**Proportional risk.** Each confirmed vulnerability gets a risk rating, high or low, built from three inputs:
+- the CVSS vector: attack vector, attack complexity, privileges, user interaction, and C/I/A impact;
+- the EPSS score, read from the GitHub advisory;
+- its exposure in this code: whether the package ships, and whether the code reaches the vulnerable path and meets its preconditions.
+
+That rating is weighed against the cost of the fix:
+- A cheap, verified fix (same minor, or same major without breaking change) is always applied.
+- When the only fix is a major release, or a minor release that breaks the code, a low risk is **accepted**. The acceptance carries an expiry and is recorded where the project's scanners read it:
+  - a `.trivyignore` entry (`exp:` date);
+  - a dismissed Dependabot alert (`not_used` / `tolerable_risk`);
+  - an osv-scanner or pnpm audit ignore.
+- A high risk is **escalated** first in the report, never accepted.
+
+Acceptances are written only after you approve them. In unattended runs they are only proposed in the PR. Earlier acceptances that have not expired are honored, unless the skill's own assessment now rates the risk high, in which case it escalates.
+
+**What happens:**
+1. Collects advisories from the arguments, the session, Dependabot and the CI security job.
+2. Finds the commit production runs and branches from it. With drift, the PR targets a release-line branch.
+3. Confirms each advisory against the production lockfile, rates its risk, and decides between patch, accept and escalate. A patch targets the lowest patched version in the same major.
+4. Verifies each target and gives it a verdict: verified, needs a human, or rejected.
+5. Runs the CI gates on the untouched production commit to get a baseline.
+6. Patches in lockfile-only mode, with scripts disabled, then verifies every other version the patch moved.
+7. Re-audits and compares the gates with the baseline.
+8. Commits with a `fix(deps):` message, and runs `/code-review high --fix` on `<production>..HEAD`.
+9. Opens the PR, with the verification evidence per package, and babysits CI by following `babysit-pr`.
+10. `--automerge` merges with `--match-head-commit`. It uses `--admin` only when a required review is the sole blocker. `--release` then ships through the repository's own mechanism and verifies the deploy.
+
+Autonomy needs a boring patch. Any of these revokes `--automerge` and `--release`, and the PR is still opened with the reasons at the top:
+- a kept "needs a human" verdict;
+- a malware advisory;
+- weak production evidence;
+- a missing baseline;
+- a source change;
+- an unfixed review finding.
+
+A malware advisory also adds an incident notice: rotate the secrets and purge the caches.
+
+The skill never runs `npm audit fix`, `pnpm audit --fix`, `bun audit fix`, `--latest` or `npx`. It never edits tests or CI to get green, never force-pushes, never approves a deployment, and never rolls production back.
+
+**Requirements:** git, and an authenticated gh. Without gh, the run is local-only and stops at the commit.
+
+**Permissions:** the merge is pre-approved only with `--match-head-commit`; tag, release, dispatch, release-branch pushes and Dependabot alert dismissals are not pre-approved, so a manual-mode session confirms each one. For unattended runs, use auto mode or allow rules, and set `CLAUDE_CODE_PRINT_BG_WAIT_CEILING_MS=0` so `claude -p` waits for CI and deploy runs.
+
+---
+
 ### skill-fixer
 
 Evaluates and improves a plugin's skills by applying Anthropic's skill authoring best practices. Triggers when you ask to fix, improve, or review skills.
