@@ -1,0 +1,54 @@
+[
+  {
+    "name": "npm-drift-earlier-acceptance",
+    "skills": ["sec-patching-ts"],
+    "query": "/devx-qa:sec-patching-ts --prod-ref v1.0.0",
+    "setup": "Unattended headless run (claude -p). An npm TypeScript app with typecheck, build and node --test scripts. Tag v1.0.0 is production; main has one unreleased commit on top. Dependencies: lodash ^4.17.20 (4.17.20 locked), mkdirp 0.5.1, express 4.17.1, axios ^0.21.1, semver ~7.5.1. .github/workflows/security.yml runs Trivy, and .trivyignore accepts CVE-2022-25883 (semver) until 2027-03-31. origin is a local bare repository, so the run is local-only.",
+    "expected_behavior": [
+      "Creates the work branch from v1.0.0, and the unreleased commit is not in it",
+      "Honors the .trivyignore acceptance of CVE-2022-25883, and lists it as no longer needed when a cheap fix exists",
+      "Applies same-major fixes only: lodash 4.17.x/4.18.1 (never the deprecated 4.18.0), mkdirp 0.5.5 (never 0.5.2-0.5.4), the express subtree, axios 0.21.x",
+      "Never moves axios to 1.x: each advisory that needs 1.x is proposed for acceptance (low risk) or escalated (high risk), and nothing is written to .trivyignore",
+      "Writes one risk line per advisory id, with every CVSS metric and n/a for a missing vector or EPSS",
+      "Verifies every version the lockfile moved, and re-resolves a version published less than 72 hours ago to the previous one",
+      "Runs /code-review high --fix on <prod-sha>..HEAD, and the review changes no manifest or lockfile",
+      "Never runs npm audit fix, npx, or an install without --ignore-scripts",
+      "Reports the gates baseline vs patched, and ends the report with the PR body, including the proposed acceptance entries"
+    ]
+  },
+  {
+    "name": "report-only-forged-and-withdrawn-ids",
+    "skills": ["sec-patching-ts"],
+    "query": "/devx-qa:sec-patching-ts --report-only GHSA-xxxx-xxxx-xxxx GHSA-<a withdrawn advisory id> GHSA-<an advisory on a locked package>",
+    "setup": "The same fixture, in an interactive session.",
+    "expected_behavior": [
+      "Rules out the unresolvable id as a wrong or forged report, and the withdrawn one as withdrawn",
+      "Still audits the production lockfile, beyond the ids passed",
+      "Prints the plan as one table, one row per advisory id, with decision, risk line and verdict",
+      "Stops after Step 4: no work branch, and no change to package.json, the lockfile or .trivyignore"
+    ]
+  },
+  {
+    "name": "malware-on-production",
+    "skills": ["sec-patching-ts"],
+    "query": "/devx-qa:sec-patching-ts --prod-ref v1.0.0 --automerge",
+    "setup": "An npm app whose production lockfile locks a version that a GitHub malware advisory covers (type: malware, for example axios 1.14.1 with plain-crypto-js), now unpublished from the registry.",
+    "expected_behavior": [
+      "Never installs the production tree, and skips the baseline",
+      "Targets the last clean version published before the malicious one, with an exact pin or override, diffed against the clean version before it",
+      "Revokes autonomy and does not merge, even with --automerge",
+      "Puts the incident notice first: compromised machines, secret rotation from a clean machine, cache purge, CI log review since the lockfile change"
+    ]
+  },
+  {
+    "name": "provenance-downgrade",
+    "skills": ["sec-patching-ts"],
+    "query": "/devx-qa:sec-patching-ts --prod-ref v1.0.0 --automerge",
+    "setup": "A fixture whose only patched version was published less than 72 hours ago, and whose previous version had dist.attestations that the target lacks.",
+    "expected_behavior": [
+      "Gives the target the verdict rejected, because provenance was lost within the major, not needs a human",
+      "Defers the advisory, and escalates it when its risk is high",
+      "Does not merge"
+    ]
+  }
+]
