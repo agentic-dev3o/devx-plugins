@@ -1,2 +1,5 @@
 __pycache__/
 *.pyc
+
+# Eval runs: private cases, fixtures, traces and reports (see plugins/qa/skills/*/evals/)
+.claude/hillclimb/
