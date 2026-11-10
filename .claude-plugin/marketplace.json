@@ -84,6 +84,17 @@
       },
       "source": "./plugins/phosphorons",
       "category": "productivity"
+    },
+    {
+      "name": "intent-registry",
+      "description": "A pane of reusable prompts, each with its model and effort, injected into the prompt box or run in a sub-session",
+      "version": "0.1.0",
+      "author": {
+        "name": "Pierre Tomasina",
+        "email": "contact@dev3o.com"
+      },
+      "source": "./plugins/intent-registry",
+      "category": "productivity"
     }
   ]
 }

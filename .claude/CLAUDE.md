@@ -60,3 +60,4 @@ Inline bash execution uses `!` syntax: `!`git status``
 | secrets-guard | Block access to secret/sensitive files | hooks only |
 | landing-page | Structured copywriting & Astro 5 landing pages | `/writing-landing-page-copy`, `/building-landing-page` (skills) |
 | agentic-engineering | Audit agents/tool-loops/inference and rewrite prompts via Anthropic best practices | `/auditing-agentic-systems`, `/optimizing-prompts` (skills) |
+| intent-registry | Mod: pane of reusable prompts with per-intent model/effort, injected into the prompt box or run in a sub-session | `/intents` (function hooks) |
