@@ -7,7 +7,29 @@ A Claude Code mod (function hooks) that adds an **Intent registry** pane: a list
 - The pane opens by itself the first time the mod runs; after that, `/intents` opens it.
 - The model picker lists the models your Claude Code offers (its `/config` model choices), so new models appear without a change to the mod.
 
-Intents live in the `INTENTS` list at the top of `hooks/register.tsx`.
+## Where intents live
+
+Intents are read from `.claude/intents.json` in the session's working directory, so a team can commit and share them:
+
+```json
+{
+  "intents": [
+    {
+      "id": "thorough",
+      "name": "Thorough & bold",
+      "text": "Be thorough in your analysis and bold in your recommendations",
+      "model": "opus",
+      "effort": "xhigh"
+    }
+  ]
+}
+```
+
+- `name` and `text` are required; `id` is derived from the name when absent.
+- `model` is a model alias your Claude Code offers, or `session` (the default); `effort` is one of `session`, `low`, `medium`, `high`, `xhigh`, `max`.
+- Without the file, three built-in intents are shown, and the pane's first change writes them to it.
+- In the pane, **+ New intent** adds one, **Edit** changes its name and prompt (and offers **Delete**, which asks for a confirmation), and the model and effort picker saves to the file.
+- `/intents` reads the file again, so changes made outside the pane show. A file that does not parse is reported in the pane and never written over.
 
 ## Develop
 
