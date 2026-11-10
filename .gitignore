@@ -3,3 +3,6 @@ __pycache__/
 
 # Eval runs: private cases, fixtures, traces and reports (see plugins/qa/skills/*/evals/)
 .claude/hillclimb/
+
+# Types the Claude Code engine writes beside a mod it loads
+plugins/*/.claude-plugin/types/
