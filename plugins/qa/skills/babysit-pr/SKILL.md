@@ -7,7 +7,6 @@ description: >-
   the devx-git skills. Use when the user asks to babysit, watch, or monitor a PR, says CI or
   checks are failing or red, asks to analyse PR job errors and remediate them, or wants a PR
   driven to a ready-to-merge state after opening it.
-disable-model-invocation: true
 allowed-tools: Bash(git:*), Bash(gh:*), Bash(npm:*), Bash(pnpm:*), Bash(yarn:*), Bash(make:*), Bash(cargo:*), Bash(go:*), Bash(pytest:*), Read, Edit, Write, Grep, Glob, Skill
 argument-hint: "[pr-number-or-url]"
 ---
